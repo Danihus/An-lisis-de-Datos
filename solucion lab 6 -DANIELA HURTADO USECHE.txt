@@ -1,0 +1,53 @@
+--CREAR DATA BASE
+create database libreria;
+
+--CREAR TABLAS
+use libreria;
+CREATE TABLE Libros (
+    Id_Libro INT PRIMARY KEY AUTO_INCREMENT,Titulo VARCHAR(250) NOT NULL, Autor VARCHAR(150), Genero VARCHAR(150), Año_Publicacion INT, Disponible BOOLEAN DEFAULT TRUE
+    );
+CREATE TABLE Clientes (
+    Id_Cliente INT PRIMARY KEY AUTO_INCREMENT,Nombre VARCHAR(100) NOT NULL,Correo VARCHAR(255),Telefono VARCHAR(20)
+);
+
+CREATE TABLE Prestamos (
+    Id_Prestamo INT PRIMARY KEY AUTO_INCREMENT,Id_Cliente INT,Id_Libro INT,Fecha_Prestamo DATE,Fecha_Devolucion DATE,
+    FOREIGN KEY (Id_Cliente) REFERENCES Clientes(Id_Cliente),
+    FOREIGN KEY (Id_Libro) REFERENCES Libros(Id_Libro)
+);
+
+--INSERTAR DATOS
+USE LIBRERIA;	
+INSERT INTO Libros (Titulo, Autor, Genero, Año_Publicacion)VALUES 
+	('Cien Años de Soledad', 'Gabriel Garcia Marquez', 'Novela', 1967),('Harry Potter y la Piedra Filosofal', 'JK ROWLING', 'Fantasia', 1997),('1984', 'George Orwell', 'Ciencia ficcion', 1949),('La metamorfosis', 'Franz Kafka', 'Ficción', 1915),
+	('Orgullo y prejuicio', 'Jane Austen', 'Novela', 1813);
+	
+INSERT INTO clientes (Nombre,Correo, Telefono) VALUES
+	('Ana Perez', 'anap@yahoo.es', '3259684'), ('Luis Pinto', 'lp@hotmail.com', '35268974'), ('Lina Mora', 'morita@gmail.com', '32589741');
+INSERT INTO prestamos (Id_Cliente, Id_Libro,Fecha_Prestamo, Fecha_Devolucion) VALUES (1, 3, '2024-08-01', '2024-08-15'), 
+	(2, 2, '2024-08-02', '2024-08-16'),(3, 4, '2025-03-01', '');
+
+--CONSULTA
+--MOSTRAR LIBROS DISPONIBLES
+SELECT * FROM Prestamos WHERE Fecha_Devolucion < CURRENT_DATE;
+
+--LISTAR PRESTAMOS POR CLIENTE ESPECIFICO
+SELECT * FROM Prestamos 
+JOIN Clientes ON Prestamos.Id_Cliente = Clientes.Id_Cliente
+WHERE clientes.Nombre = 'Ana Perez';
+
+--LIBROS MAS PRESTADOS
+SELECT  Libros.Titulo, COUNT(*) AS VecesPrestado FROM  Prestamos JOIN Libros ON Prestamos.Id_Libro = Libros.Id_Libro
+GROUP BY Libros.Titulo
+ORDER BY VecesPrestado DESC;
+
+--CLIENTES QUE NO HAN DEVUELTO UN LIBRO
+--OPC 1
+SELECT * FROM Prestamos 
+JOIN Clientes ON Prestamos.Id_Cliente = Clientes.Id_Cliente
+WHERE Prestamos.Fecha_Devolucion IS null;
+
+--OPC 2
+SELECT clientes.Nombre FROM Prestamos 
+JOIN Clientes ON Prestamos.Id_Cliente = Clientes.Id_Cliente
+WHERE Prestamos.Fecha_Devolucion IS null;
